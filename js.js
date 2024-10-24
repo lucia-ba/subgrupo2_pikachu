@@ -1,9 +1,12 @@
 let products = []; // Declare products array
         const divInfo = document.getElementById("container");
         const searchBar = document.getElementById('search-bar');
+        const busqueda = searchBar.value.toLowerCase();
+        const boton = document.getElementById("btn");
+        const url = 'https://pokeapi.co/api/v2/pokemon/${}'  
 
-        document.addEventListener("DOMContentLoaded", function() {
-            fetch("https://pokeapi.co/api/v2/pokemon") 
+        btn.addEventListener("click", function() {
+            fetch(url) 
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
@@ -45,6 +48,12 @@ let products = []; // Declare products array
                     })
                     .then(data => {
                         console.log(data); // Log the response to see its structure
+
+                        if(data && data.sprites){
+                            const imagen = document.createElement('div');
+                            imagen.innerHTML = '<img src="'+data.sprites.front_default +'"/>';
+                            productContainer.appendChild(imagen);
+                        }
                         
                         // Display base stats
                         if (data && data.stats) {
