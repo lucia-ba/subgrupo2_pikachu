@@ -3,18 +3,17 @@ let products = []; // Declare products array
         const searchBar = document.getElementById('search-bar');
 
         document.addEventListener("DOMContentLoaded", function() {
-            fetch("https://pokeapi.co/api/v2/pokemon") // Fetch with a limit to get a manageable number of Pokémon
+            fetch("https://pokeapi.co/api/v2/pokemon") 
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
-                    return response.json(); // Convert the response to JSON
+                    return response.json(); 
                 })
                 .then(data => {
-                    console.log(data); // Log the response to see its structure
+                    console.log(data); 
                     if (data && data.results) {
-                        products = data.results; // Save products globally
-                        
+                        products = data.results; 
                     }
                 })
                 .catch(error => {
@@ -28,12 +27,75 @@ let products = []; // Declare products array
 
         function renderProducts(productsToRender) {
             divInfo.innerHTML = ''; // Clear the container
+        
             productsToRender.forEach((product) => {
                 // Create a container div for each product
                 const productContainer = document.createElement('div');
-                productContainer.className = 'product-container'; // Add class
+                productContainer.className = 'product-container'; 
                 productContainer.innerHTML = product.name; // Display Pokémon name
                 divInfo.appendChild(productContainer);
+        
+                // Fetch Pokémon data
+                fetch(product.url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json(); // Convert the response to JSON
+                    })
+                    .then(data => {
+                        console.log(data); // Log the response to see its structure
+                        
+                        // Display base stats
+                        if (data && data.stats) {
+                            const statsLabel = document.createElement('div');
+                            statsLabel.innerHTML = 'Base Stats:'; // Label for base stats
+                            productContainer.appendChild(statsLabel);
+        
+                            data.stats.forEach(stat => {
+                                const statContainer = document.createElement('div');
+                                statContainer.innerHTML = `${stat.stat.name}: ${stat.base_stat}`; // Display stat name and value
+                                productContainer.appendChild(statContainer);
+                            });
+                        }
+        
+                        // Display abilities
+                        if (data && data.abilities) {
+                            const abilitiesLabel = document.createElement('div');
+                            abilitiesLabel.innerHTML = 'Abilities:'; // Label for abilities
+                            productContainer.appendChild(abilitiesLabel);
+        
+                            data.abilities.forEach(ability => {
+                                const abilityContainer = document.createElement('div');
+                                abilityContainer.innerHTML = ability.ability.name; // Display ability name
+                                productContainer.appendChild(abilityContainer);
+        
+                                // Fetch ability details
+                                fetch(ability.ability.url)
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error('Network response was not ok');
+                                        }
+                                        return response.json(); // Convert the response to JSON
+                                    })
+                                    .then(abilityData => {
+                                        // Check if the ability data contains a description
+                                        if (abilityData && abilityData.effect_entries) {
+                                            const description = abilityData.effect_entries.find(entry => entry.language.name === 'en');
+                                            const abilityDescription = document.createElement('div');
+                                            abilityDescription.innerHTML = description ? description.effect : 'No description available.';
+                                            abilityContainer.appendChild(abilityDescription); // Append description to abilityContainer
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('There was a problem with the fetch operation for ability:', error);
+                                    });
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation for Pokémon:', error);
+                    });
             });
         }
 
