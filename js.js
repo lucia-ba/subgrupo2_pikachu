@@ -3,7 +3,7 @@ let products = []; // Declare products array
         const searchBar = document.getElementById('search-bar');
 
         document.addEventListener("DOMContentLoaded", function() {
-            fetch("https://pokeapi.co/api/v2/pokemon?limit=100") // Fetch with a limit to get a manageable number of Pokémon
+            fetch("https://pokeapi.co/api/v2/pokemon") // Fetch with a limit to get a manageable number of Pokémon
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
