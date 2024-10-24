@@ -1,40 +1,37 @@
 let products = []; // Declare products array
         const divInfo = document.getElementById("container");
         const searchBar = document.getElementById('search-bar');
+        const busqueda = searchBar.value.toLowerCase();
+        const boton = document.getElementById('btn');
 
-        document.addEventListener("DOMContentLoaded", function() {
-            fetch("https://pokeapi.co/api/v2/pokemon") // Fetch with a limit to get a manageable number of Pokémon
+        btn.addEventListener("click", function() {
+            const busqueda = searchBar.value.toLowerCase(); // Obtener el valor del input
+            fetch("https://pokeapi.co/api/v2/pokemon/" + busqueda) // Fetch para un Pokémon específico
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
-                    return response.json(); // Convert the response to JSON
+                    return response.json(); // Convertir la respuesta a JSON
                 })
                 .then(data => {
-                    console.log(data); // Log the response to see its structure
-                    if (data && data.results) {
-                        products = data.results; // Save products globally
-                        
+                    console.log(data); // Loguear la respuesta para ver su estructura
+                    if (data) {
+                        products.push(data); // Guardar el Pokémon encontrado
+                        renderProducts(); // Llamar a la función para mostrar los Pokémon
                     }
                 })
                 .catch(error => {
                     console.error('There was a problem with the fetch operation:', error);
                 });
-                searchBar.addEventListener('input', (event) => {
-                    const query = event.target.value;
-                    filterProducts(query);
-                });
         });
 
         function renderProducts(productsToRender) {
             divInfo.innerHTML = ''; // Clear the container
-            productsToRender.forEach((product) => {
                 // Create a container div for each product
                 const productContainer = document.createElement('div');
                 productContainer.className = 'product-container'; // Add class
                 productContainer.innerHTML = product.name; // Display Pokémon name
                 divInfo.appendChild(productContainer);
-            });
         }
 
         
